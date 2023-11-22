@@ -1,0 +1,11 @@
+path: D:/TIF/Semester 5/Project Peternakan Kambing/detection/data
+train:
+  # - body/images/train
+  - sheep/images/train
+val:
+  # - body/images/train
+  - sheep/images/train
+
+names:
+  #0: body 
+  1: sheep

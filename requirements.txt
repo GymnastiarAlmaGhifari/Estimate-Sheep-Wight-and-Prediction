@@ -1,0 +1,15 @@
+Flask
+numpy
+
+statsmodels
+sqlalchemy
+mysql-connector-python
+python-dotenv
+
+opencv-python
+ultralytics
+rembg
+Pillow
+pandas
+
+# matplotlib
