@@ -12,4 +12,5 @@ rembg
 Pillow
 pandas
 
+scikit-learn
 # matplotlib
