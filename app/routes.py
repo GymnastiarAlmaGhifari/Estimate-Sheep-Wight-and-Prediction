@@ -14,7 +14,6 @@ id_kambing_global = None
 @bp.route('/api/python/image', methods=['POST'])
 def receive_image():
     global id_kambing_global
-
     try:
         print("Request received")
         id = request.args.get('id')
@@ -58,6 +57,8 @@ def get_kambing():
     # gunakan id_kambing untuk mengambil data kambing dari database
     kambing = get_kambing(id_kambing_global)
     return jsonify({"kambing": kambing})
+
+
     
 # @bp.route('/index')
 # def index():

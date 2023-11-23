@@ -116,7 +116,7 @@ def process_image(image_bytes, id):
         cleaned = cv2.morphologyEx(closing, cv2.MORPH_OPEN, kernel)
         segmented_frame = np.uint8(cleaned)
         contours, _ = cv2.findContours(segmented_frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        kambing_data = get_kambing(id)
+        kambing_data = get_kambing(id, estimated_weight_second, rotated_image)
         if 'tanggal_lahir' in kambing_data:
                     tanggal_lahir = kambing_data['tanggal_lahir']
                     print(f"Tanggal Lahir: {tanggal_lahir}")
