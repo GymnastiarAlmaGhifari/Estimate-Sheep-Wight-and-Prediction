@@ -58,7 +58,7 @@ def process_image(image_bytes, id):
         input_image_no_bg_first = cv2.bitwise_and(rotated_image, rotated_image, mask=mask_first)
 
         results_second = model_second(input_image_no_bg_first)[0]
-
+        
         # Set a detection threshold for the second detection
         threshold_second = 0.5
 
@@ -95,7 +95,6 @@ def process_image(image_bytes, id):
         ret, binary_image = cv2.threshold(gray_median_blurred_second, 127, 255, cv2.THRESH_BINARY)
         cv2.imshow("putih nih boss", binary_image)
 
-
         # Estimate the weight based on the contour of the detected object in the second detection
         contours, _ = cv2.findContours(mask_second, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
  
@@ -124,7 +123,7 @@ def process_image(image_bytes, id):
                     tanggal_lahir = kambing_data['tanggal_lahir']
                     print(f"Tanggal Lahir: {tanggal_lahir}")
 
-                    # Gunakan tanggal_lahir sebagai bagian dari nama file
+        # Gunakan tanggal_lahir sebagai bagian dari nama file
         file_path = f'uploads/images/{id}_{tanggal_lahir}.jpeg'
         cv2.imwrite(file_path, rotated_image)
 
