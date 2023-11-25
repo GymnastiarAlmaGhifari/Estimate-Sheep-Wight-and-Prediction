@@ -21,7 +21,7 @@ def estimate_weight(length_mm, breadth_mm):
 model_first = YOLO('D:/Backup agim/document/All Project/Kuliah/semester 5/Python/imageProcess/runs/detect/train2/weights/best.pt')
 
 # Load YOLO model for the second detection
-model_second = YOLO('D:/Backup agim/document/All Project/Kuliah/semester 5/Python/imageProcess/runs/detect/train5/weights/best.pt')
+model_second = YOLO('D:/Backup agim/document/All Project/Kuliah/semester 5/Python/imageProcess/runs/detect/train4/weights/best.pt')
 
 # # Path to the input image
 # input_path = ('D:/TIF/Semester 5/Project Peternakan Kambing/detection/test/kambing (127).jpg')
@@ -47,16 +47,15 @@ def process_image(image_bytes, id):
             x1_first, y1_first, x2_first, y2_first, score_first, class_id_first = result_first
 
             if score_first > threshold_first:
-                cv2.rectangle(rotated_image, (int(x1_first), int(y1_first)), (int(x2_first), int(y2_first)), (0, 255, 0), 4)
+                cv2.rectangle(input_image, (int(x1_first), int(y1_first)), (int(x2_first), int(y2_first)), (0, 255, 0), 4)
                 label_first = results_first.names[int(class_id_first)].upper()
-                cv2.putText(rotated_image, label_first, (int(x1_first), int(y1_first - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3, cv2.LINE_AA)
-
-            # Create a mask for the detected object in the first detection
-            mask_first[int(y1_first):int(y2_first), int(x1_first):int(x2_first)] = 255
-
+                cv2.putText(input_image, label_first, (int(x1_first), int(y1_first - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3, cv2.LINE_AA)
+        
+                # Create a mask for the detected object in the first detection
+                mask_first[int(y1_first):int(y2_first), int(x1_first):int(x2_first)] = 255
+        
         # Apply the mask to remove the background from the input image in the first detection
         input_image_no_bg_first = cv2.bitwise_and(rotated_image, rotated_image, mask=mask_first)
-
 
         results_second = model_second(input_image_no_bg_first)[0]
 
@@ -74,20 +73,10 @@ def process_image(image_bytes, id):
                 cv2.rectangle(rotated_image, (int(x1_second), int(y1_second)), (int(x2_second), int(y2_second)), (0, 255, 0), 4)
                 print(results_second.names[int(class_id_second)].upper())
                 label_second = results_second.names[int(class_id_second)].upper()
-            cv2.putText(rotated_image, label_second, (int(x1_second), int(y1_second - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3, cv2.LINE_AA)
+                cv2.putText(rotated_image, label_second, (int(x1_second), int(y1_second - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3, cv2.LINE_AA)
 
-            # Create a mask for the detected object in the second detection
-            mask_second[int(y1_second):int(y2_second), int(x1_second):int(x2_second)] = 255
-
-            # Estimate the weight based on the contour of the detected object in the second detection
-            contour_second, _ = cv2.findContours(mask_second, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            if contour_second:
-                current_contour_second = max(contour_second, key=cv2.contourArea)
-                x_second, y_second, w_second, h_second = cv2.boundingRect(current_contour_second)
-                length_mm_second = w_second
-                breadth_mm_second = h_second
-                estimated_weight_second = estimate_weight(length_mm_second, breadth_mm_second)
-                cv2.putText(rotated_image, f"Weight : {estimated_weight_second:.2f} kg", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                # Create a mask for the detected object in the second detection
+                mask_second[int(y1_second):int(y2_second), int(x1_second):int(x2_second)] = 255
 
         # Apply the mask to remove the background from the input image in the second detection
         input_image_no_bg_second = cv2.bitwise_and(rotated_image, rotated_image, mask=mask_second)
@@ -99,24 +88,38 @@ def process_image(image_bytes, id):
         # Convert the processed image to grayscale
         gray_second = cv2.cvtColor(input_image_no_bg_removed, cv2.COLOR_BGR2GRAY)
 
-        # Apply Gaussian Blur to reduce noise
-        
-
-        # Apply Bilateral Filter
-        
-
         # Apply Median Blur
         gray_median_blurred_second = cv2.medianBlur(gray_second, 5)
 
-        # Apply additional image processing (e.g., edge detection and morphological operations)
-        edges = cv2.Canny(gray_median_blurred_second, 0, 0)
-        kernel = np.ones((10, 10), np.uint8)
-        closing = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel)
-        kernel = np.ones((15, 15), np.uint8)
-        cleaned = cv2.morphologyEx(closing, cv2.MORPH_OPEN, kernel)
-        segmented_frame = np.uint8(cleaned)
-        contours, _ = cv2.findContours(segmented_frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        kambing_data = get_kambing(id, estimated_weight_second, rotated_image)
+        # Display Binary image
+        ret, binary_image = cv2.threshold(gray_median_blurred_second, 127, 255, cv2.THRESH_BINARY)
+        cv2.imshow("putih nih boss", binary_image)
+
+
+        # Estimate the weight based on the contour of the detected object in the second detection
+        contours, _ = cv2.findContours(mask_second, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+ 
+        # Initialize variables to store the width and height
+        width, height = 0, 0
+
+        # Iterate through the contours
+        for contour in contours:
+            # Get the bounding box of the contour
+            x, y, w, h = cv2.boundingRect(contour)
+    
+        # Update width and height if the current bounding box is larger
+        width = max(width, w)
+        height = max(height, h)
+
+        # Estimate length and breadth from the maximum width and height
+        length_mm = height 
+        breadth_mm = width
+
+        # Predict the weight
+        predicted_weight = estimate_weight(length_mm, breadth_mm)
+        
+        # Apply additional image processing (e.g., edge detection anad morphological operations)
+        kambing_data = get_kambing(id, predicted_weight, rotated_image)
         if 'tanggal_lahir' in kambing_data:
                     tanggal_lahir = kambing_data['tanggal_lahir']
                     print(f"Tanggal Lahir: {tanggal_lahir}")
