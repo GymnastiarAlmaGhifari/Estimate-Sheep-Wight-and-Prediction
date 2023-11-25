@@ -2,14 +2,12 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
-# from app.db import use_engine
+from app.db import use_engine
 import requests
 def prediksi_bobot(id_kambing, umur_bulan, estimated_weight_second, rotated_image):
-    try:
-        umur_bulan = int(umur_bulan)
-    except ValueError:
-        print("Error: Umur bulan harus berupa angka.")
-        return
+    
+    umur_bulan = int(umur_bulan)
+    
 
     if umur_bulan < 0 or umur_bulan > 11:
         print("Error: Umur bulan tidak valid. Harus berada dalam rentang 0 hingga 11.")
@@ -36,32 +34,19 @@ def prediksi_bobot(id_kambing, umur_bulan, estimated_weight_second, rotated_imag
         print("Error: Dataset tidak mencukupi untuk pelatihan model.")
         return
 
-    try:
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        model = LinearRegression()
-        model.fit(X_train, y_train)
-    except Exception as e:
-        print(f"Error during model training: {e}")
-        return
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    model = LinearRegression()
+    model.fit(X_train, y_train)
 
-    try:
-        y_pred = model.predict(X_test)
-        mse = mean_squared_error(y_test, y_pred)
-        r2 = r2_score(y_test, y_pred)
-    except Exception as e:
-        print(f"Error during prediction: {e}")
-        return
-
+    
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
     data_kambing23 = pd.DataFrame({
         bobot_df: [estimated_weight_second]
     })
 
-    try:
-        predicted_weight = model.predict(data_kambing23)
-    except Exception as e:
-        print(f"Error during final prediction: {e}")
-        return
-
+    predicted_weight = model.predict(data_kambing23)
     print("ID Kambing:", id_kambing)
     print("Umur_bulan:", umur_bulan)
     print("Estimated dari param:", estimated_weight_second)

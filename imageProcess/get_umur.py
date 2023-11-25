@@ -2,7 +2,7 @@
 import pandas as pd
 from app.db import use_engine
 from datetime import datetime
-from Prediksi.prediksi_bobot import prediksi_bobot
+from Prediksi.regresi_bobot12dinamis import prediksi_bobot
 
 def get_kambing(id_kambing, estimated_weight_second, rotated_image):
     try:

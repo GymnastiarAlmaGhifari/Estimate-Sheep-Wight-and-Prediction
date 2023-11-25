@@ -18,10 +18,10 @@ def estimate_weight(length_mm, breadth_mm):
     return weight
 
 # Load YOLO model for the first detection
-model_first = YOLO('D:/Backup agim/document/All Project/Kuliah/semester 5/Python/imageProcess/runs/detect/train2/weights/best.pt')
+model_first = YOLO('D:/Backup agim/document/All Project/Kuliah/semester 5/Estimate Sheep Wight and Prediction/imageProcess/runs/detect/train2/weights/best.pt')
 
 # Load YOLO model for the second detection
-model_second = YOLO('D:/Backup agim/document/All Project/Kuliah/semester 5/Python/imageProcess/runs/detect/train4/weights/best.pt')
+model_second = YOLO('D:/Backup agim/document/All Project/Kuliah/semester 5/Estimate Sheep Wight and Prediction/imageProcess/runs/detect/train4/weights/best.pt')
 
 # # Path to the input image
 # input_path = ('D:/TIF/Semester 5/Project Peternakan Kambing/detection/test/kambing (127).jpg')
