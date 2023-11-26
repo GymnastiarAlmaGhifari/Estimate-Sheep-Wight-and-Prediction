@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request,jsonify, send_from_directory
 from datetime import datetime
 from imageProcess.double_detec import process_image
-from imageProcess.gambar import save_image
+# from imageProcess.gambar import save_image
 from imageProcess.get_umur import get_kambing
 
 # from exponen.co2 import get_forecast_co2
