@@ -4,11 +4,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from app.db import use_engine
 import requests
-def prediksi_bobot(id_kambing, umur_bulan, estimated_weight_second, rotated_image):
+import io
+from PIL import Image
+def prediksi_bobot(id, umur_bulan, predicted_weight, rotated_image):
     
-    umur_bulan = int(umur_bulan)
-    
-
     if umur_bulan < 0 or umur_bulan > 11:
         print("Error: Umur bulan tidak valid. Harus berada dalam rentang 0 hingga 11.")
         return
@@ -43,46 +42,47 @@ def prediksi_bobot(id_kambing, umur_bulan, estimated_weight_second, rotated_imag
     mse = mean_squared_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
     data_kambing23 = pd.DataFrame({
-        bobot_df: [estimated_weight_second]
+        bobot_df: [predicted_weight]
     })
 
     predicted_weight = model.predict(data_kambing23)
-    print("ID Kambing:", id_kambing)
+    print("ID Kambing:", id)
     print("Umur_bulan:", umur_bulan)
-    print("Estimated dari param:", estimated_weight_second)
+    print("Estimated dari param:", predicted_weight)
     print("Rotated:", rotated_image)
 
-    result_string = ""
+    deskripsi = ""
     for i, prediksi in enumerate(predicted_weight[0], start=umur_bulan+1):
         formatted_prediksi = f'{prediksi:.2f}'
-        result_string += f'{formatted_prediksi}|'
+        deskripsi += f'{formatted_prediksi}|'
         print(f'Prediksi bobot kambing pada bulan ke-{i}: {formatted_prediksi}')
-    # send_kambing(id_kambing, rotated_image, result_string, estimated_weight_second, umur_bulan)
-    print(result_string)
+    send_kambing(id, rotated_image, deskripsi, predicted_weight, umur_bulan)
+    print(deskripsi)
     
-def send_kambing(id_kambing, rotated_image, deskripsi, bobot, usia) :
+def send_kambing(id, rotated_image, deskripsi, predicted_weight, umur_bulan) :
     try:
         engine = use_engine()
-        query_existence = f"SELECT 1 FROM kambing WHERE id_kambing = '{id_kambing}' LIMIT 1"
+        query_existence = f"SELECT 1 FROM kambing WHERE id_kambing = '{id}' LIMIT 1"
         result_existence = engine.execute(query_existence)
 
         if result_existence.fetchone():
-            nextjs_api_url = f'http://localhost:3000/api/socket/image?id={id_kambing}&bobot={bobot}&usia={usia}&deskripsi={deskripsi}'
+            nextjs_api_url = f'http://localhost:3000/api/socket/image?id={id}&bobot={predicted_weight}&usia={umur_bulan}&deskripsi={deskripsi}'
+            with io.BytesIO() as output:
+                rotated_image_pil = Image.fromarray(rotated_image) 
+                rotated_image_pil.save(output, format="JPEG")
+                rotated_image_bytes = output.getvalue()
 
-            # Buka file gambar
-            with open(rotated_image, 'rb') as file_gambar:
-                # Buat kamus untuk data formulir
-                files = {'id': (None, id_kambing), 'image': (rotated_image, file_gambar)}
-                # Kirim ID, tanggal_lahir, dan gambar ke API Next.js menggunakan multipart/form-data
-                response = requests.post(nextjs_api_url, files=files)
+            # Send the rotated image bytes to the API
+            files = {'filename': ('rotated_image.jpg', rotated_image_bytes, 'image/jpeg')}
+            response = requests.post(nextjs_api_url, files=files)
 
             if response.status_code == 200:
                 print('Data berhasil dikirim ke API Next.js')
             else:
                 print('Gagal mengirim data:', response.status_code, response.text)
 
-            return {"id": id_kambing, "bobot": bobot, "usia": usia, "deskripsi": deskripsi}, 200
+                return {"id": id, "bobot": predicted_weight, "usia": umur_bulan, "deskripsi": deskripsi}, 200
         else:
-            return {"error": f"Tidak ada data ditemukan untuk ID {id_kambing}"}, 404
+            return {"error": f"Tidak ada data ditemukan untuk ID {id}"}, 404
     except Exception as e:
         return {"error": f"Error mengambil data: {str(e)}"}, 500
