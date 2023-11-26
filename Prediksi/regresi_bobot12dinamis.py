@@ -15,7 +15,7 @@ def prediksi_bobot(id_kambing, umur_bulan, estimated_weight_second, rotated_imag
         print("Error: Umur bulan tidak valid. Harus berada dalam rentang 0 hingga 11.")
         return
 
-    dataset = pd.read_csv('datadummy_kambingcerdas2.csv')
+    dataset = pd.read_csv('E:\coolyeah\Semester 5\Sistem Cerdas\Estimate-Sheep-Weight-and-Prediction\Estimate-Sheep-Wight-and-Prediction\Prediksi\datadummy_kambingcerdas2_22data.csv')
     bobot_df = f"{umur_bulan}bulan"
 
     if bobot_df not in dataset.columns:
@@ -37,7 +37,7 @@ def prediksi_bobot(id_kambing, umur_bulan, estimated_weight_second, rotated_imag
         return
 
     try:
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.8, random_state=42)
         model = LinearRegression()
         model.fit(X_train, y_train)
     except Exception as e:
@@ -74,7 +74,7 @@ def prediksi_bobot(id_kambing, umur_bulan, estimated_weight_second, rotated_imag
         print(f'Prediksi bobot kambing pada bulan ke-{i}: {formatted_prediksi}')
     # send_kambing(id_kambing, rotated_image, result_string, estimated_weight_second, umur_bulan)
     print(result_string)
-    
+prediksi_bobot("ID123",0, 4.0, "mbek.jpg")
 def send_kambing(id_kambing, rotated_image, deskripsi, bobot, usia) :
     try:
         engine = use_engine()
