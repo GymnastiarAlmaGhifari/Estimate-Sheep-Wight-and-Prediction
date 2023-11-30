@@ -155,82 +155,56 @@ def process_image(image_bytes, id):
 
                 #     return {"id": id, "bobot": predicted_weight, "usia": umur_bulan, "deskripsi": "akwokaokwaokoa"}, 200
                 # prediksi_bobot(id, umur_bulan, estimated_weight_second, rotated_image)
-                if umur_bulan < 0 or umur_bulan > 11:
-                    print("Error: Umur bulan tidak valid. Harus berada dalam rentang 0 hingga 11.")
-                    return
+                if umur_bulan >= 0 and umur_bulan <= 6:
+                    counter = 6
+                elif umur_bulan>=7 and umur_bulan<=11:
+                    counter = 6
+                    if umur_bulan+counter > 12:
+                        counter = 12 - umur_bulan
+                else:
+                    print("Umur bulan tidak valid.")
+                deskripsi=""
             # 'D:/Backup agim/document/All Project/Kuliah/semester 5/Estimate Sheep Wight and Prediction
                 dataset = pd.read_csv('D:/Backup agim/document/All Project/Kuliah/semester 5/Estimate Sheep Wight and Prediction/Prediksi/datadummy_kambingcerdas2.csv')
-                bobot_df = f"{umur_bulan}bulan"
-
-                if bobot_df not in dataset.columns:
-                    print(f"Error: Kolom {bobot_df} tidak ditemukan dalam dataset.")
-                    return
-
-                X = dataset[[bobot_df]]
-
-                if umur_bulan >= 0 and umur_bulan <= 6:
-                    y = dataset.iloc[:, umur_bulan+2:umur_bulan+8]
-                elif umur_bulan >= 7 and umur_bulan <= 11:
-                    y = dataset.iloc[:, umur_bulan+2:]
-                else:
-                    print("Error: Umur bulan tidak valid.")
-                    return
-
-                if X.empty or y.empty:
-                    print("Error: Dataset tidak mencukupi untuk pelatihan model.")
-                    return
-
-                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-                model = LinearRegression()
-                model.fit(X_train, y_train)
-
-                    
-                y_pred = model.predict(X_test)
-                mse = mean_squared_error(y_test, y_pred)
-                r2 = r2_score(y_test, y_pred)
-                data_kambing23 = pd.DataFrame({
-                    bobot_df: [predicted_weight_cerdas]
-                })
-
-                predicted_weight = model.predict(data_kambing23)
-                print("ID Kambing:", id)
-                print("Umur_bulan:", umur_bulan)
-                print("Estimated dari param:", predicted_weight_cerdas)
-                print("Rotated:", rotated_image)
-
-                deskripsi = ""
-                for i, prediksi in enumerate(predicted_weight[0], start=umur_bulan+1):
-                    formatted_prediksi = f'{prediksi:.2f}'
-                    deskripsi += f'{formatted_prediksi}|'
-                    print(f'Prediksi bobot kambing pada bulan ke-{i}: {formatted_prediksi}')
-                
+                for k in range(1, counter+1):
+                    bobot_df = f"{umur_bulan}bulan"
+                    if bobot_df not in dataset.columns:
+                        print(f"Error: Kolom {bobot_df} tidak ditemukan dalam dataset.")
+                        return
+                    X = dataset[[bobot_df]]
+                    y = dataset[[f'{umur_bulan+k}bulan']]
+                    if X.empty or y.empty:
+                        print("Error: Dataset tidak mencukupi untuk pelatihan model.")
+                        return
+                    X_kuadrat = X.apply(lambda x: x ** 2)
+                    sum_x_kuadrat = X_kuadrat.sum().sum()
+                    sum_x = X.sum().sum()
+                    sum_y = y.sum().sum()
+                    sum_x_kali_y = 0
+                    for i in range(len(X)):
+                        for j in range(len(y.columns)):
+                            sum_x_kali_y += X.iloc[i, 0] * y.iloc[i, j]
+                    n = X.count()
+                    a = ((sum_y*sum_x_kuadrat) - (sum_x*sum_x_kali_y))/((n*(sum_x_kuadrat))-(pow(sum_x,2)))
+                    b = ((n*sum_x_kali_y) - (sum_x*sum_y))/((n*sum_x_kuadrat) - ((pow(sum_x,2))))
+                    persamaan = a + (b * predicted_weight_cerdas)
+                    deskripsi += f"Bulan ke-{k+umur_bulan}: {persamaan[0]}|"
                 nextjs_api_url = f'http://localhost:3000/api/socket/image?id={id}&bobot={predicted_weight_cerdas}&usia={umur_bulan}&deskripsi={deskripsi}'
                 with io.BytesIO() as output:
                     rotated_image_pil = Image.fromarray(rotated_image) 
                     rotated_image_pil.save(output, format="JPEG")
                     rotated_image_bytes = output.getvalue()
-
-                # Send the rotated image bytes to the API
                 files = {'filename': ('rotated_image.jpg', rotated_image_bytes, 'image/jpeg')}
                 response = requests.post(nextjs_api_url, files=files)
-
                 if response.status_code == 200:
                     print('Data berhasil dikirim ke API Next.js')
                 else:
                     print('Gagal mengirim data:', response.status_code, response.text)
-
                     return {"id": id, "bobot": predicted_weight_cerdas, "usia": umur_bulan, "deskripsi": "akwokaokwaokoa"}, 200
-
-                print(deskripsi)
-
-
                 return {"tanggal_lahir": str(tanggal_lahir)}
             else:
                 return {"error": f"No data found for ID {id}"}, 404
         except Exception as e:
             return {"error": f"Error retrieving data: {str(e)}"}, 500
-        
-
-
     except Exception as e:
         print(f"Error: {str(e)}")
