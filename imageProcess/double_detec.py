@@ -189,7 +189,20 @@ def process_image(image_bytes, id):
                     b = ((n*sum_x_kali_y) - (sum_x*sum_y))/((n*sum_x_kuadrat) - ((pow(sum_x,2))))
                     persamaan = a + (b * predicted_weight_cerdas)
                     deskripsi += f"Bulan ke-{k+umur_bulan}: {persamaan[0]}|"
-                nextjs_api_url = f'http://localhost:3000/api/socket/image?id={id}&bobot={predicted_weight_cerdas}&usia={umur_bulan}&deskripsi={deskripsi}'
+                    print(deskripsi)
+                    bobot_df_standart = f"{umur_bulan}bulan"
+                    X_standart = dataset[[bobot_df_standart]]
+                    print(X_standart)
+                    X_mean = X_standart.mean()
+                    print(X_mean[0])
+                    standart_bobot = X_mean[0] 
+                    if predicted_weight_cerdas < standart_bobot:
+                        keterangan = "Peternak harus waspada karena bobot saat ini tidak sesuai standart"
+                    elif predicted_weight_cerdas > standart_bobot:
+                        keterangan = "Bobot domba sangat baik dengan usia saat ini"
+                    elif predicted_weight_cerdas + 2 > standart_bobot:
+                        keterangan = "Bobot domba sudah sesai dengan standart usahakan pemberian pakan dan pemeriksaan kesehatan tetap teratur"
+                nextjs_api_url = f'http://localhost:3000/api/socket/image?id={id}&bobot={predicted_weight_cerdas}&usia={umur_bulan}&deskripsi={deskripsi}&standart={standart_bobot}&keterangan={keterangan}'
                 with io.BytesIO() as output:
                     rotated_image_pil = Image.fromarray(rotated_image) 
                     rotated_image_pil.save(output, format="JPEG")
