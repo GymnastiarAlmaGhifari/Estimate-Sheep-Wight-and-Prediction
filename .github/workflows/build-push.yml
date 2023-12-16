@@ -41,7 +41,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            yoganovaindra/kambing_cerdas-ml:${{ env.VER_TAG }}
-            yoganovaindra/kambing_cerdas-ml:latest
-            ghcr.io/yoganovvaindra/kambing_cerdas-ml:${{ env.VER_TAG }}            
-            ghcr.io/yoganovvaindra/kambing_cerdas-ml:latest
+            yoganovaindra/dombacerdas-ml:${{ env.VER_TAG }}
+            yoganovaindra/dombacerdas-ml:latest
+            ghcr.io/yoganovvaindra/dombacerdas-ml:${{ env.VER_TAG }}            
+            ghcr.io/yoganovvaindra/dombacerdas-ml:latest
