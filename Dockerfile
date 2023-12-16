@@ -13,7 +13,7 @@ COPY /.env .
 COPY /run.py .
 COPY /app ./app
 COPY /Prediksi ./Prediksi
-COPY /imageProses ./imageProses
+COPY /imageProcess ./imageProcess
 
 # add environment variables
 ENV MYSQL_HOST=10.1.1.13
