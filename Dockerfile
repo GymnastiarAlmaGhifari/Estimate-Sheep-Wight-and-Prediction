@@ -12,11 +12,11 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # add environment variables
-MYSQL_HOST=10.1.1.13
-MYSQL_USER=root
-MYSQL_PORT=3306
-MYSQL_PASSWORD=abogoboga
-MYSQL_DB=peternakan_kambing_cerdas
+ENV MYSQL_HOST=10.1.1.13
+ENV MYSQL_USER=root
+ENV MYSQL_PORT=3306
+ENV MYSQL_PASSWORD=abogoboga
+ENV MYSQL_DB=peternakan_kambing_cerdas
 # Expose the port your Flask app will run on
 EXPOSE 3001
 
