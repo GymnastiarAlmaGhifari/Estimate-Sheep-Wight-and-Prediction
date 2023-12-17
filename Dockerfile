@@ -27,4 +27,4 @@ EXPOSE 3001
 # Define the command to run your Flask application
 # CMD ["python", "run.py"]
 #use gunicorn
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:3001", "run:app"]
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:3001", "--timeout", "600", "run:app"]
