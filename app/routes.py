@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request,jsonify, send_from_directo
 from datetime import datetime
 from imageProcess.double_detec import process_image
 # from imageProcess.gambar import save_image
-from imageProcess.get_umur import get_kambing
 
 # from exponen.co2 import get_forecast_co2
 
@@ -44,19 +43,19 @@ def receive_image():
         print(f'Error: {str(e)}')
         return jsonify({"error": f"500 Internal Server Error - {str(e)}"}), 500
     
-@bp.route('/api/python/kambing', methods=['GET'])
-def get_kambing():
-    global id_kambing_global
+# @bp.route('/api/python/kambing', methods=['GET'])
+# def get_kambing():
+#     global id_kambing_global
 
-    # gunakan variabel global id_kambing_global untuk mengambil id dari user
-    id_kambing =request.args.get('id_kambing_global')
+#     # gunakan variabel global id_kambing_global untuk mengambil id dari user
+#     id_kambing =request.args.get('id_kambing_global')
 
-    if id_kambing is None:
-        return jsonify({"error": "Missing 'id_kambing_global' parameter"}), 400
+#     if id_kambing is None:
+#         return jsonify({"error": "Missing 'id_kambing_global' parameter"}), 400
     
-    # gunakan id_kambing untuk mengambil data kambing dari database
-    kambing = get_kambing(id_kambing_global)
-    return jsonify({"kambing": kambing})
+#     # gunakan id_kambing untuk mengambil data kambing dari database
+#     kambing = get_kambing(id_kambing_global)
+#     return jsonify({"kambing": kambing})
 
 
     
