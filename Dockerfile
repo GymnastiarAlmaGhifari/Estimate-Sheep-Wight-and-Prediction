@@ -9,11 +9,7 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 # Copy the Flask application code into the container
-COPY /.env .
-COPY /run.py .
-COPY /app ./app
-COPY /Prediksi ./Prediksi
-COPY /imageProcess ./imageProcess
+COPY . .
 
 # add environment variables
 ENV MYSQL_HOST=10.1.1.13
