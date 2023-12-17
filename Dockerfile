@@ -19,6 +19,8 @@ ENV MYSQL_USER=root
 ENV MYSQL_PORT=3306
 ENV MYSQL_PASSWORD=abogoboga
 ENV MYSQL_DB=peternakan_kambing_cerdas
+ENV NEXTJS_API_BASE_URL=https://dombacerdas.gymnastiarag.my.id/api/socket/image
+
 # Expose the port your Flask app will run on
 EXPOSE 3001
 
