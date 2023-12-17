@@ -4,6 +4,8 @@ FROM python:3.10
 # Set the working directory in the container
 WORKDIR /app
 
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+
 # Copy the requirements file into the container and install the required dependencies
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
