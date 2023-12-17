@@ -11,7 +11,7 @@ permissions:
       packages: write
 
 env:
-  VER_TAG: v0.1.0
+  VER_TAG: v0.3.1
 
 jobs:
   docker:
@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: |
             yoganovaindra/dombacerdas-ml:${{ env.VER_TAG }}
