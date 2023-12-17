@@ -9,13 +9,10 @@ import pandas as pd
 from app.db import use_engine
 import requests
 import io
-# sheepDetection/get_umur.py
 import pandas as pd
 from app.db import use_engine
 from datetime import datetime
 from dotenv import load_dotenv
-
-
 
 def estimate_weight(length_mm, breadth_mm):
     c = 0.035143
