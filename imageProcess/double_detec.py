@@ -13,6 +13,8 @@ import io
 import pandas as pd
 from app.db import use_engine
 from datetime import datetime
+from dotenv import load_dotenv
+
 
 
 def estimate_weight(length_mm, breadth_mm):
@@ -35,6 +37,11 @@ model_first = YOLO(model_first_path)
 # Load YOLO model for the second detection
 model_second = YOLO(second_model_path)
     
+# Load environment variables from .env file
+load_dotenv()
+
+# Get the base URL from the environment variables
+base_url = os.getenv('NEXTJS_API_BASE_URL')
 
 def process_image(image_bytes, id):
     try:
@@ -169,7 +176,8 @@ def process_image(image_bytes, id):
                     print("Umur bulan tidak valid.")
                 deskripsi=""
             # 'D:/Backup agim/document/All Project/Kuliah/semester 5/Estimate Sheep Wight and Prediction
-                dataset = pd.read_csv('D:/Backup agim/document/All Project/Kuliah/semester 5/Estimate Sheep Wight and Prediction/Prediksi/datadummy_kambingcerdas2.csv')
+                datasetPath = os.path.join(base_path, 'Prediksi/datadummy_kambingcerdas2.csv')
+                dataset = pd.read_csv(datasetPath)
                 for k in range(1, counter+1):
                     bobot_df = f"{umur_bulan}bulan"
                     if bobot_df not in dataset.columns:
@@ -206,7 +214,15 @@ def process_image(image_bytes, id):
                         keterangan = "Bobot domba sangat baik dengan usia saat ini"
                     elif predicted_weight_cerdas + 2 > standart_bobot:
                         keterangan = "Bobot domba sudah sesai dengan standart usahakan pemberian pakan dan pemeriksaan kesehatan tetap teratur"
-                nextjs_api_url = f'http://localhost:3000/api/socket/image?id={id}&bobot={predicted_weight_cerdas}&usia={umur_bulan}&deskripsi={deskripsi}&standart={standart_bobot}&keterangan={keterangan}'
+                nextjs_api_url = (
+                    f'{base_url}?'
+                    f'id={id}&'
+                    f'bobot={predicted_weight_cerdas}&'
+                    f'usia={umur_bulan}&'
+                    f'deskripsi={deskripsi}&'
+                    f'standart={standart_bobot}&'
+                    f'keterangan={keterangan}'
+                )
                 with io.BytesIO() as output:
                     rotated_image_pil = Image.fromarray(rotated_image) 
                     rotated_image_pil.save(output, format="JPEG")
