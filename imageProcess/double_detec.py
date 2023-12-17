@@ -7,16 +7,13 @@ from PIL import Image
 from datetime import datetime
 import pandas as pd
 from app.db import use_engine
-from imageProcess.get_umur import get_kambing
 import requests
 import io
 # sheepDetection/get_umur.py
 import pandas as pd
 from app.db import use_engine
 from datetime import datetime
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
+
 
 def estimate_weight(length_mm, breadth_mm):
     c = 0.035143
@@ -25,12 +22,19 @@ def estimate_weight(length_mm, breadth_mm):
 
     return weight
 
+# model_first_path = os.path.join(base_path, 'runs', 'detect', 'train2', 'weights', 'best.pt')
+# Update the file paths for YOLO models
+base_path = 'imageProcess/'
+
+model_first_path = os.path.join(base_path, 'runs/detect/train1/weights/best.pt')
+second_model_path = os.path.join(base_path, 'runs/detect/train2/weights/best.pt')
+
 # Load YOLO model for the first detection
-model_first = YOLO('D:/Backup agim/document/All Project/Kuliah/semester 5/Estimate Sheep Wight and Prediction/runs/detect/train2/weights/best.pt')
+model_first = YOLO(model_first_path)
 
 # Load YOLO model for the second detection
-model_second = YOLO('D:/Backup agim/document/All Project/Kuliah/semester 5/Estimate Sheep Wight and Prediction/runs/detect/train4/weights/best.pt')
-
+model_second = YOLO(second_model_path)
+    
 
 def process_image(image_bytes, id):
     try:
